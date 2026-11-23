@@ -1,0 +1,33 @@
+# Prediction template. Copy to predictions/P2030-001.yml (your id) and replace every <...> placeholder.
+# Field rules: schema/prediction.schema.mjs (JSON Schema for editors: schema/prediction.schema.json).
+id: <ID>                         # P2030-001 style: P<horizon>-<three digits>, same as the filename
+title: <TITLE>
+claim: >
+  <CLAIM>
+horizon: <HORIZON>               # 2030 | 2050 | 2100
+resolution_date: <RESOLUTION_DATE>   # YYYY-MM-DD, when the claim is judged
+created: <CREATED>               # YYYY-MM-DD
+probability: <PROBABILITY>       # integer 1..99, percent that the claim resolves true
+probability_basis: >
+  <PROBABILITY_BASIS>
+assumptions:                     # at least 2
+  - id: A1
+    statement: <ASSUMPTION_1>
+    watch: <WATCH_1>
+  - id: A2
+    statement: <ASSUMPTION_2>
+    watch: <WATCH_2>
+checkpoint_date: <CHECKPOINT_DATE>   # after created, not after resolution_date, within 2 years (2030) or 5 years (2050, 2100) of created
+checkpoint_signal: >
+  <CHECKPOINT_SIGNAL>
+resolution_criteria: >
+  <RESOLUTION_CRITERIA>
+resolution_source: <RESOLUTION_SOURCE>   # a URL or a named dataset
+status: open                     # open | checkpoint_met | checkpoint_missed | resolved_true | resolved_false | ambiguous | withdrawn
+sources:                         # at least 1
+  - title: <SOURCE_TITLE>
+    url: <SOURCE_URL>
+    accessed: <SOURCE_ACCESSED>  # YYYY-MM-DD
+revisions: []                    # append-only: - {date, probability, reason}
+tags: []
+# set only at resolution (required for resolved_true, resolved_false, ambiguous): resolved_on, resolution_note

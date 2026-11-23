@@ -1,0 +1,32 @@
+# TEST DATA, not a published prediction
+# expect: id
+id: P2100-001
+title: Synthetic fixture for the 2030 horizon
+claim: >
+  By 2030-12-31, a synthetic metric X reaches at least 10 on the fixture dashboard.
+horizon: 2030
+resolution_date: 2030-12-31
+created: 2026-11-20
+probability: 55
+probability_basis: >
+  Invented reference class for a test fixture. Base rate assumed to be one in two.
+assumptions:
+  - id: A1
+    statement: The fixture dashboard keeps publishing metric X.
+    watch: The fixture dashboard changelog.
+  - id: A2
+    statement: Metric X keeps its current definition.
+    watch: The fixture dashboard methodology page.
+checkpoint_date: 2028-06-30
+checkpoint_signal: >
+  Metric X is at least 5 by the checkpoint; below 3 means revise down.
+resolution_criteria: >
+  Metric X as shown on the fixture dashboard on 2030-12-31 is 10 or more.
+resolution_source: https://example.org/fixture-dashboard
+status: open
+sources:
+  - title: Fixture dashboard
+    url: https://example.org/fixture-dashboard
+    accessed: 2026-11-20
+revisions: []
+tags: [fixture]
