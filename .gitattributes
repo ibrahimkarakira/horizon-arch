@@ -1,0 +1,2 @@
+# Store and check out text as LF on every OS, so a Windows edit (core.autocrlf=true, npm) never rewrites every line of a file.
+* text=auto eol=lf
