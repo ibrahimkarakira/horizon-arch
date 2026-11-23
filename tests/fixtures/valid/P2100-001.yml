@@ -1,0 +1,29 @@
+# TEST DATA, not a published prediction
+id: P2100-001
+title: Synthetic fixture for the 2100 horizon
+claim: >
+  By 2100-12-31, a synthetic archive Z is still readable with its original format spec.
+horizon: 2100
+resolution_date: 2100-12-31
+created: 2026-11-20
+probability: 12
+probability_basis: >
+  Invented reference class for a test fixture. Base rate assumed to be about one in eight.
+assumptions:
+  - id: A1
+    statement: The format spec for archive Z stays public.
+    watch: The fixture spec page.
+  - id: A2
+    statement: At least one maintained reader exists.
+    watch: The fixture reader list.
+checkpoint_date: 2031-01-01
+checkpoint_signal: >
+  A maintained reader for archive Z exists at the checkpoint.
+resolution_criteria: >
+  A reader released after 2095 opens archive Z on 2100-12-31.
+resolution_source: https://example.org/fixture-archive
+status: open
+sources:
+  - title: Fixture spec page
+    url: https://example.org/fixture-spec
+    accessed: 2026-11-20

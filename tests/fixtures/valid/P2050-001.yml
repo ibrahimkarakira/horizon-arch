@@ -1,0 +1,35 @@
+# TEST DATA, not a published prediction
+id: P2050-001
+title: Synthetic fixture for the 2050 horizon
+claim: >
+  By 2050-12-31, a synthetic system Y has run for 20 years without a rewrite.
+horizon: 2050
+resolution_date: 2050-12-31
+created: 2026-11-20
+probability: 30
+probability_basis: >
+  Invented reference class for a test fixture. Base rate assumed to be three in ten.
+assumptions:
+  - id: A1
+    statement: System Y stays in service.
+    watch: The fixture service registry.
+  - id: A2
+    statement: A rewrite is recorded as a new major version.
+    watch: The fixture release notes.
+checkpoint_date: 2031-11-20
+checkpoint_signal: >
+  System Y is still on major version 1 at the checkpoint.
+resolution_criteria: >
+  The fixture release notes show major version 1 on 2050-12-31.
+resolution_source: Fixture release notes (synthetic dataset)
+status: resolved_true
+resolved_on: 2050-12-31
+resolution_note: Synthetic resolution for a test fixture.
+sources:
+  - title: Fixture release notes
+    url: https://example.org/fixture-releases
+    accessed: 2026-11-20
+revisions:
+  - date: 2027-01-15
+    probability: 35
+    reason: Synthetic revision for a test fixture.
