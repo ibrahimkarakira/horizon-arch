@@ -1,0 +1,24 @@
+/* Diagram palette (docs/diagram-convention.md). Starlight's default theme is dark; light overrides it.
+   Four neutrals and two accents; every foreground is at least 4.5:1 against both backgrounds
+   (tests/diagrams.test.mjs checks this). */
+:root {
+  --ha-surface: #17181c;
+  --ha-fill: #24262d;
+  --ha-line: #a3a8b4;
+  --ha-ink: #eceef2;
+  --ha-short: #ff9e6e;
+  --ha-long: #73c7ea;
+}
+
+:root[data-theme='light'] {
+  --ha-surface: #ffffff;
+  --ha-fill: #eef0f3;
+  --ha-line: #5c6270;
+  --ha-ink: #1b1d22;
+  --ha-short: #a8411a;
+  --ha-long: #1c6690;
+}
+
+figure.diagram { margin: 1.5rem 0; }
+figure.diagram svg { display: block; width: 100%; height: auto; }
+figure.diagram figcaption { margin-top: 0.5rem; font-size: var(--sl-text-sm); color: var(--sl-color-gray-2); }

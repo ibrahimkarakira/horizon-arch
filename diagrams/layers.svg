@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 436" role="img" aria-labelledby="layers-title layers-desc">
+  <title id="layers-title">The six layers of an AI system, half-lives not yet measured</title>
+  <desc id="layers-desc">A table of six layers, one row each: model; instruction and prompt layer; tool and API interface; data and memory; evaluation assets; human process. A second column says what each layer holds. The half-life column is blank in every row because no layer has been measured yet. The row order is not a ranking.</desc>
+  <style>
+    /* Colours come from the page palette (src/styles/diagrams.css); the fallbacks are the light theme. */
+    .ha-bg { fill: var(--ha-surface, #ffffff); }
+    .ha-row { fill: var(--ha-fill, #eef0f3); stroke: var(--ha-line, #5c6270); stroke-width: 1; }
+    .ha-blank { fill: none; stroke: var(--ha-line, #5c6270); stroke-width: 1; stroke-dasharray: 4 4; }
+    .ha-head { fill: var(--ha-ink, #1b1d22); font: 600 15px system-ui, sans-serif; }
+    .ha-name { fill: var(--ha-ink, #1b1d22); font: 600 15px system-ui, sans-serif; }
+    .ha-text { fill: var(--ha-ink, #1b1d22); font: 14px system-ui, sans-serif; }
+    .ha-note { fill: var(--ha-line, #5c6270); font: italic 13px system-ui, sans-serif; }
+  </style>
+  <rect class="ha-bg" width="720" height="436"/>
+  <text class="ha-head" x="24" y="34">Layer</text>
+  <text class="ha-head" x="248" y="34">What it holds</text>
+  <text class="ha-head" x="560" y="34">Half-life</text>
+
+  <rect class="ha-row" x="16" y="48" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="79">Model</text>
+  <text class="ha-text" x="248" y="79">The model version the system calls</text>
+  <rect class="ha-blank" x="556" y="48" width="148" height="52" rx="6"/>
+
+  <rect class="ha-row" x="16" y="108" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="139">Instructions and prompts</text>
+  <text class="ha-text" x="248" y="139">System prompts, templates, instruction files</text>
+  <rect class="ha-blank" x="556" y="108" width="148" height="52" rx="6"/>
+
+  <rect class="ha-row" x="16" y="168" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="199">Tool and API interface</text>
+  <text class="ha-text" x="248" y="199">Tool schemas, SDK calls, API contracts</text>
+  <rect class="ha-blank" x="556" y="168" width="148" height="52" rx="6"/>
+
+  <rect class="ha-row" x="16" y="228" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="259">Data and memory</text>
+  <text class="ha-text" x="248" y="259">Documents, embeddings, stored context</text>
+  <rect class="ha-blank" x="556" y="228" width="148" height="52" rx="6"/>
+
+  <rect class="ha-row" x="16" y="288" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="319">Evaluation assets</text>
+  <text class="ha-text" x="248" y="319">Test sets, graders, expected outputs</text>
+  <rect class="ha-blank" x="556" y="288" width="148" height="52" rx="6"/>
+
+  <rect class="ha-row" x="16" y="348" width="528" height="52" rx="6"/>
+  <text class="ha-name" x="32" y="379">Human process</text>
+  <text class="ha-text" x="248" y="379">Reviews, approvals, operating routines</text>
+  <rect class="ha-blank" x="556" y="348" width="148" height="52" rx="6"/>
+
+  <text class="ha-note" x="16" y="424">Half-lives are blank until measured. Row order is not a ranking.</text>
+</svg>

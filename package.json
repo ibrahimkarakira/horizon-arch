@@ -19,12 +19,16 @@
     "check": "node scripts/check.mjs",
     "validate": "node scripts/validate-predictions.mjs",
     "schema:json": "node scripts/build-schema-json.mjs",
-    "scoreboard": "node scripts/scoreboard.mjs"
+    "scoreboard": "node scripts/scoreboard.mjs",
+    "postbuild": "npm run check:sources",
+    "check:sources": "node scripts/check-sources.mjs"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",
     "@astrojs/starlight": "0.43.1",
     "astro": "7.4.13",
+    "astro-mermaid": "2.2.0",
+    "mermaid": "12.3.0",
     "typescript": "6.0.3",
     "yaml": "2.9.1",
     "zod": "4.6.7"
