@@ -8,6 +8,7 @@ const STEPS = [
   ['build', 'npm run build'],
   ['test', 'npm test'], // reads dist/, so it runs after build
   ['validate', 'npm run validate'], // every file in predictions/
+  ['sources', 'npm run check:sources'], // alt text in dist/, citations in src/content/docs/
 ];
 
 for (const [name, command] of STEPS) {
