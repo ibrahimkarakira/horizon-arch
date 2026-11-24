@@ -18,7 +18,7 @@ export default defineConfig({
         group('ADRs', 'adrs'),
         group('Essays', 'essays'),
         group('Scenarios', 'scenarios'),
-        group('Scoreboard', 'scoreboard'),
+        { label: 'Scoreboard', items: ['scoreboard'] },
       ],
     }),
   ],
