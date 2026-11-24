@@ -1,0 +1,81 @@
+---
+title: Model Half-Life
+description: How long each layer of an AI system stays in service, how to measure it, and what the framework does not claim.
+---
+
+import Layers from '../../../../diagrams/layers.svg';
+
+## Definition
+
+Model Half-Life is the median time one version of a layer of an AI system stays in service before it is replaced, measured separately for each of the six layers. The model layer gives the framework its name because vendors retire models on a published schedule; the architectural point is to put seams at the layer boundaries, so that whichever layer turns out to be shortest-lived is the cheapest one to replace.
+
+The model layer is the easiest place to see this. OpenAI, Anthropic and Google each publish a page listing deprecated models with a shutdown or retirement date,[^openai][^anthropic][^google] and Anthropic's page states that requests to a retired model fail.[^anthropic] A system wired to one model version therefore has a lifetime set partly by someone else's calendar.
+
+## The six layers
+
+The layers are described on [Layers of an AI system](/framework/layers/). Each changes for its own reasons, so each is measured on its own.
+
+<figure class="diagram">
+  <Layers />
+  <figcaption>The claim this supports: each layer changes for a different reason and can be measured from the system's own history. The half-life column stays blank until it holds measured values.</figcaption>
+</figure>
+
+| Layer | What one version is | Typical change driver | How to measure |
+|---|---|---|---|
+| Model | One model ID in production | Vendor releases, deprecations and retirements | Dates the model ID changed in configuration history |
+| Instructions and prompts | One revision of the system prompt, templates and instruction files | Model swaps, product changes, observed failures | Dates of substantive rewrites in the prompt files' version history |
+| Tool and API interface | One version of the tool schemas and the pinned SDK | SDK and API version changes, schema changes | Dates of schema version bumps and SDK upgrades |
+| Data and memory | One build of the index, embeddings and stored context | New sources, a new embedding model that forces a re-index | Dates of re-index and migration events |
+| Evaluation assets | One version of the test sets, graders and expected outputs | New failure modes, tests that every candidate passes, a model swap that changes expected outputs | Dates a test-set version was replaced rather than extended |
+| Human process | One revision of the review, approval and operating routines | Team, policy and regulation changes | Dates of revisions to runbooks and approval rules |
+
+"Replaced" means the old version stopped serving production traffic, not that it was edited. A typo fix in a prompt is not a new version; a rewrite that changes behaviour is. Each team states its own threshold and keeps it fixed.
+
+## How to estimate it
+
+1. **Pick the layer and define a version.** Use the table above, and write the threshold for "replaced" down before looking at the data.
+2. **List every version with its dates.** Start date is when it first served production traffic; end date is when it stopped. Version control, deployment logs and configuration history usually hold both.
+3. **Keep the versions still in service.** A version that is still running has a lifetime of at least its age so far. Dropping it biases the estimate short; counting its age as a full lifetime also biases it short. Statisticians call it censored.
+4. **Estimate the survival curve.** The Kaplan-Meier product-limit procedure gives a survival estimate from complete and censored lifetimes without assuming any particular distribution.[^nist] The half-life is the first time at which the estimated share still in service drops to one half or below.
+5. **Report the sample size next to the number.** A half-life from three versions is a description of one system, not a property of the layer.
+
+The term borrows from decay, but nothing here assumes the lifetimes decay exponentially. The median is used because it needs no such assumption.
+
+## Worked example (synthetic)
+
+Every number in this section is invented to show the arithmetic. The system is a fictional support assistant.
+
+**Model layer.** The assistant has used four model IDs. Three were replaced after 120, 180 and 240 days. The fourth has been in service for 60 days.
+
+| Day | Event | In service just before | Estimated share still in service |
+|---|---|---|---|
+| 60 | Current version, still running (censored) | 4 | 1.00 |
+| 120 | Replaced | 3 | 1.00 × 2/3 = 0.67 |
+| 180 | Replaced | 2 | 0.67 × 1/2 = 0.33 |
+| 240 | Replaced | 1 | 0.33 × 0/1 = 0 |
+
+The share drops to one half or below at day 180, so the model layer's half-life in this system is 180 days, from n = 4 versions.
+
+**Evaluation assets.** Two test-set versions were replaced after 400 and 610 days; the current one has run for 500 days. At day 400 the estimate falls to 2/3; at 500 the running version leaves the count without an event; at 610 it falls to 0. The half-life is 610 days, from n = 3. Ignoring the censoring and taking the median of the two finished lifetimes would give 505 days, which is why step 3 matters.
+
+**Reading it.** In this invented system the model layer turns over more than three times as often as the evaluation set. The seam between them, a stable evaluation harness that any candidate model can be run against, is the one worth making cheap.
+
+## What this is not
+
+- **Not a measurement of real systems.** This page defines the method. No real half-life is stated here. A planned dataset, not yet published, will record vendor retirement dates from public deprecation pages; that measures how long vendors keep a model available, which caps the model layer's lifetime but is not the per-system half-life defined here.
+- **Not an original idea.** The phrase "model half-life" is already in use: for the shrinking time between headline model releases,[^aifocus] and for how long a model holds its users on a routing service.[^openrouter] This page uses it for something narrower, the lifetime of each layer inside one system. Layers changing at different speeds is the idea of pace layering, which grew out of the shearing layers of buildings.[^pace] Fitting a half-life to how long code survives in a repository has been done for open-source projects, with a large spread between projects.[^code]
+- **Not a claim that the model is always the shortest-lived layer.** That is the hypothesis the measurements test, and a system can prove it wrong.
+- **Not a law.** Lifetimes depend on the team, the product and the vendor. Coupling between layers, which machine-learning systems are prone to through boundary erosion and entanglement,[^debt] can make one layer's replacement force another's.
+- **Not a ranking of vendors.** Retirement dates describe a published lifecycle, not the quality of a model.
+
+## Sources checked
+
+[^openai]: Deprecations, OpenAI API documentation, https://developers.openai.com/api/docs/deprecations, accessed 2026-11-25
+[^anthropic]: Model deprecations, Claude Platform Docs, https://platform.claude.com/docs/en/about-claude/model-deprecations, accessed 2026-11-25
+[^google]: Gemini deprecations, Gemini API documentation, https://aistudio.google.com/docs/deprecations, accessed 2026-11-25
+[^nist]: Empirical model fitting, distribution free (Kaplan-Meier) approach, NIST/SEMATECH e-Handbook of Statistical Methods, https://www.itl.nist.gov/div898/handbook/apr/section2/apr215.htm, accessed 2026-11-25
+[^aifocus]: Model half-life: how fast do AI models go stale?, AI Focus, https://aifoc.us/model-half-life/, accessed 2026-11-25
+[^openrouter]: Model Half-Life, Inferred (OpenRouter), https://openrouter.ai/data/newsletter/model-half-life, accessed 2026-11-25
+[^pace]: Pace Layering: How Complex Systems Learn and Keep Learning, Journal of Design and Science, https://jods.mitpress.mit.edu/pub/issue3-brand/release/2, accessed 2026-11-25
+[^code]: The half-life of code and the ship of Theseus, https://erikbern.com/2016/12/05/the-half-life-of-code.html, accessed 2026-11-25
+[^debt]: Hidden Technical Debt in Machine Learning Systems, NeurIPS 2015, https://papers.nips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html, accessed 2026-11-25
