@@ -1,5 +1,5 @@
 # TEST DATA, not a published prediction
-# expect: id
+# expect: id: must start with P2030 to match horizon
 id: P2100-001
 title: Synthetic fixture for the 2030 horizon
 claim: >

@@ -1,5 +1,5 @@
 # TEST DATA, not a published prediction
-# expect: assumptions
+# expect: assumptions: expected array to have >=2 items
 id: P2030-001
 title: Synthetic fixture for the 2030 horizon
 claim: >
