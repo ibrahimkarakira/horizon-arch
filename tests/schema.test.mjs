@@ -47,15 +47,15 @@ for (const [name, change, path] of invalidCases) {
   });
 }
 
-// Invalid fixture files (also used by the validator): line 2 is `# expect: <field path>`.
+// Invalid fixture files (also used by the validator): line 2 is `# expect: <field path>: <reason text>`.
 const invalidDir = 'tests/fixtures/invalid/';
 for (const file of await readdir(new URL(invalidDir, root))) {
   test(`invalid fixture ${file} fails at its expected path`, async () => {
     const source = await read(invalidDir + file);
     const [header, expect] = source.split(/\r?\n/);
     assert.equal(header, '# TEST DATA, not a published prediction');
-    const path = expect.match(/^# expect: (\S+)$/)?.[1];
-    assert.ok(path, `${file}: line 2 must be "# expect: <field path>"`);
+    const path = expect.match(/^# expect: (\S+): \S/)?.[1];
+    assert.ok(path, `${file}: line 2 must be "# expect: <field path>: <reason text>"`);
     const paths = issuePaths(parse(source));
     assert.ok(paths.includes(path), `expected an issue at "${path}", got ${JSON.stringify(paths)}`);
   });

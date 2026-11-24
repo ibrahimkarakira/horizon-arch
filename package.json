@@ -15,6 +15,7 @@
     "lint": "astro check",
     "test": "node --test \"tests/**/*.test.mjs\"",
     "check": "node scripts/check.mjs",
+    "validate": "node scripts/validate-predictions.mjs",
     "schema:json": "node scripts/build-schema-json.mjs"
   },
   "dependencies": {

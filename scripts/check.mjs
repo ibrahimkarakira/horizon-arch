@@ -7,6 +7,7 @@ const STEPS = [
   ['lint', 'npm run lint'],
   ['build', 'npm run build'],
   ['test', 'npm test'], // reads dist/, so it runs after build
+  ['validate', 'npm run validate'], // every file in predictions/
 ];
 
 for (const [name, command] of STEPS) {

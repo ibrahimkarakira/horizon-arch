@@ -1,5 +1,5 @@
 # TEST DATA, not a published prediction
-# expect: id
+# expect: id: must look like P2030-001
 id: P2040-1
 title: Synthetic fixture for the 2030 horizon
 claim: >
