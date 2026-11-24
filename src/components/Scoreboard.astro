@@ -1,0 +1,140 @@
+---
+// Renders src/data/scoreboard.json (written by `npm run scoreboard` in prebuild): one inline SVG status bar per
+// horizon, the Brier score with its n, and the upcoming checkpoints. SCOREBOARD_DATA overrides the path so tests
+// can build the page from fixture data without touching src/data/.
+import { readFileSync } from 'node:fs';
+import { CALIBRATION_MIN_N } from '../../scripts/scoreboard.mjs';
+
+type Counts = Record<string, number> & { total: number };
+interface Checkpoint { date: string; id: string; title: string; signal: string }
+interface Scoreboard {
+  as_of: string;
+  counts: { total: number; by_status: Record<string, number>; by_horizon: Record<string, Counts> };
+  brier: number | null;
+  brier_n: number;
+  calibration_claim: boolean;
+  upcoming_checkpoints: Checkpoint[];
+}
+
+const data: Scoreboard = JSON.parse(readFileSync(process.env.SCOREBOARD_DATA ?? 'src/data/scoreboard.json', 'utf8'));
+const statuses = Object.keys(data.counts.by_status);
+const label = (status: string) => status.replaceAll('_', ' ');
+const summary = (counts: Record<string, number>) =>
+  statuses.filter((s) => counts[s] > 0).map((s) => `${counts[s]} ${label(s)}`).join(', ') || 'no predictions';
+
+// Segments of one 100-unit-wide bar, in status order.
+function segments(counts: Counts) {
+  let x = 0;
+  return statuses
+    .filter((s) => counts[s] > 0)
+    .map((s) => {
+      const width = (counts[s] / counts.total) * 100;
+      const segment = { status: s, x, width };
+      x += width;
+      return segment;
+    });
+}
+---
+
+<div class="scoreboard not-content">
+  <p>As of {data.as_of}.</p>
+  {
+    data.counts.total === 0 ? (
+      <p class="empty">0 published predictions yet. Each prediction appears here once it is merged.</p>
+    ) : (
+      <>
+        <ul class="legend">
+          {statuses.map((s) => (
+            <li>
+              <span class={`swatch status-${s}`} aria-hidden="true" />
+              {label(s)}
+            </li>
+          ))}
+        </ul>
+        {Object.entries(data.counts.by_horizon).map(([horizon, counts]) => (
+          <figure>
+            <figcaption>
+              {horizon}: {counts.total} {counts.total === 1 ? 'prediction' : 'predictions'} (n = {counts.total})
+            </figcaption>
+            <svg
+              role="img"
+              aria-labelledby={`sb-${horizon}-title sb-${horizon}-desc`}
+              viewBox="0 0 100 6"
+              preserveAspectRatio="none"
+            >
+              <title id={`sb-${horizon}-title`}>Status of the {horizon} predictions</title>
+              <desc id={`sb-${horizon}-desc`}>{summary(counts)}</desc>
+              <rect class="track" width="100" height="6" />
+              {segments(counts).map((seg) => (
+                <rect class={`status-${seg.status}`} x={seg.x} width={seg.width} height="6" />
+              ))}
+            </svg>
+            <p class="counts">{summary(counts)}</p>
+          </figure>
+        ))}
+      </>
+    )
+  }
+  <p>
+    {data.brier_n > 0 ? `Brier score ${data.brier?.toFixed(4)} (n = ${data.brier_n})` : 'Brier score: none yet (n = 0)'}.
+    Lower is better; 0.25 is what always answering 50% would score.
+    {!data.calibration_claim && ` No calibration claim below n = ${CALIBRATION_MIN_N}.`}
+  </p>
+  <h2>Upcoming checkpoints</h2>
+  {
+    data.upcoming_checkpoints.length === 0 ? (
+      <p>No upcoming checkpoints.</p>
+    ) : (
+      <table>
+        <thead>
+          <tr><th scope="col">Date</th><th scope="col">ID</th><th scope="col">Prediction and checkpoint signal</th></tr>
+        </thead>
+        <tbody>
+          {data.upcoming_checkpoints.map((c) => (
+            <tr>
+              <td>{c.date}</td>
+              <td>{c.id}</td>
+              <td>{c.title}<br /><span class="signal">{c.signal}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+</div>
+
+<style>
+  /* One rule per status in schema/prediction.schema.mjs; tests/scoreboard-render.test.mjs fails if one is missing.
+     Mid-tone fills: each is at least 3:1 against both the dark (#17181c) and the light (#fff) page background. */
+  .scoreboard {
+    --sb-open: #3d7fe0;
+    --sb-checkpoint_met: #2a9d8f;
+    --sb-checkpoint_missed: #c77d1a;
+    --sb-resolved_true: #3a9a48;
+    --sb-resolved_false: #d64545;
+    --sb-ambiguous: #9467d0;
+    --sb-withdrawn: #868c96;
+  }
+  .status-open { fill: var(--sb-open); background: var(--sb-open); }
+  .status-checkpoint_met { fill: var(--sb-checkpoint_met); background: var(--sb-checkpoint_met); }
+  .status-checkpoint_missed { fill: var(--sb-checkpoint_missed); background: var(--sb-checkpoint_missed); }
+  .status-resolved_true { fill: var(--sb-resolved_true); background: var(--sb-resolved_true); }
+  .status-resolved_false { fill: var(--sb-resolved_false); background: var(--sb-resolved_false); }
+  .status-ambiguous { fill: var(--sb-ambiguous); background: var(--sb-ambiguous); }
+  .status-withdrawn { fill: var(--sb-withdrawn); background: var(--sb-withdrawn); }
+  .scoreboard > * + * { margin-top: 1rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; padding: 0; list-style: none; font-size: var(--sl-text-sm); }
+  .swatch { display: inline-block; width: 0.75rem; height: 0.75rem; margin-inline-end: 0.35rem; border-radius: 2px; }
+  figure { margin: 1rem 0 0; }
+  figcaption { font-weight: 600; color: var(--sl-color-white); }
+  svg { display: block; width: 100%; height: 1.5rem; margin-top: 0.25rem; }
+  rect { stroke: var(--sl-color-bg); stroke-width: 2px; vector-effect: non-scaling-stroke; }
+  .track { fill: var(--sl-color-gray-6); }
+  .counts { margin: 0.25rem 0 0; font-size: var(--sl-text-sm); }
+  h2 { font-size: var(--sl-text-h3); color: var(--sl-color-white); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--sl-text-sm); }
+  th, td { padding: 0.4rem 0.5rem; text-align: start; vertical-align: top; border-bottom: 1px solid var(--sl-color-hairline); }
+  td { overflow-wrap: anywhere; }
+  td:first-child { white-space: nowrap; }
+  .signal { color: var(--sl-color-gray-3); }
+</style>
