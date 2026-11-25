@@ -26,7 +26,7 @@ export async function checkDir(dir) {
 const DEFINITION = /^\[\^([^\]\s]+)\]:\s*(.*)$/;
 const REFERENCE = /\[\^([^\]\s]+)\](?!:)/g;
 const ACCESSED = /,\s*accessed (\d{4}-\d{2}-\d{2})\s*$/;
-const isRealDate = (d) => !Number.isNaN(Date.parse(d)) && new Date(`${d}T00:00:00Z`).toISOString().startsWith(d);
+export const isRealDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d)) && new Date(`${d}T00:00:00Z`).toISOString().startsWith(d);
 
 const isDraft = (text) => {
   const frontmatter = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);

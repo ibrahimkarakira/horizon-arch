@@ -1,0 +1,59 @@
+---
+title: Model lifetimes from public vendor pages
+description: The dataset of vendor-published model dates, how the median is computed, and what it does not show.
+---
+
+## Result
+
+**n = 76. Median: 302.5 days from a model version's release to the vendor's deprecation notice for it.** The dataset holds 112 rows; 36 are excluded, 22 for a missing release date and 14 for a missing notice date. By vendor:
+
+| Vendor | Rows | n | Median days |
+|---|---|---|---|
+| Anthropic | 22 | 15 | 364 |
+| OpenAI | 34 | 22 | 315 |
+| Google | 56 | 39 | 211 |
+
+The measure is how long a model is offered before the vendor announces its end. It is not the time to retirement, and it is not the half-life of the model layer inside a system.
+
+## Sources found
+
+Each vendor's deprecation page is the base source for every row. Where that page lacks a date, the vendor's own release notes or launch post supplies it, and the row records that second URL with its own access date.
+
+| Vendor | Deprecation page (accessed 2026-11-25) | Gives | Second source (accessed 2026-11-26) | Gives |
+|---|---|---|---|---|
+| Anthropic | Model deprecations[^anthropic] | notice, retirement | Release notes[^anthropic-notes]; launch posts for Claude 3,[^claude3] Claude 3 Haiku,[^haiku3] Claude 2[^claude2] and Claude 2.1[^claude21] | release |
+| OpenAI | Deprecations[^openai] | notice ("Notice date"), retirement ("Shutdown date") | Changelog[^openai-notes] | release |
+| Google | Gemini deprecations[^google] | release, retirement ("Shutdown date") | Release notes[^google-notes] | notice |
+
+Rows are in `data/model-lifetimes.csv` with the columns vendor, model, released, deprecation_announced, retired, source_url, accessed, notes_source_url and notes_accessed. `source_url` and `accessed` are the deprecation page. `notes_source_url` and `notes_accessed` are set only on the 79 rows where release notes or a launch post supplied a date: the release date for Anthropic and OpenAI rows, the notice date for Google rows. A date no source gives is left blank.
+
+## Method
+
+1. Read each vendor's deprecation page and record one row per model version, copying only the dates that page states. Write the page URL and the access date on every row.
+2. For a row missing its release or notice date, look the model ID up in the same vendor's release notes, or in the launch post where the notes do not reach back that far. Take the date only from an entry that releases the model (for a release date) or announces its deprecation (for a notice date), and only when the entry names the exact model ID or its family launch. Record that URL and its access date on the row. Where Google's notes announced a model twice, the earlier date is used.
+3. Never fill a date from a model ID that contains one (`claude-3-opus-20240229`, `gpt-4.1-2025-04-14`): that is a snapshot label, and the launch may fall on another day. Rows the notes do not cover stay blank: for example `gpt-realtime` and `gpt-audio`, whose first releases OpenAI's changelog does not name, `whisper-1`, whose one changelog entry adds it to the Audio API without saying it is a first release, and Claude 1 and Claude Instant, which predate Anthropic's release notes.
+4. Run `node scripts/model-halflife.mjs`. It fails if any row lacks a source URL or access date, sets only one of the two notes columns, or carries an impossible date, then prints n, the median in days and the excluded rows grouped by reason. Rows with a blank release or notice date are excluded, not imputed; a notice dated before the release is excluded too.
+5. Dates are `YYYY-MM-DD`, which JavaScript parses as UTC midnight,[^mdn] so every difference is a whole number of days. The output depends only on the CSV, so a rerun gives the same lines.
+
+## Limits
+
+- **Small n.** 76 model versions from three vendors, released between 2023 and 2026, describe those vendors in those years, not a constant of the field. Google contributes 39 of the 76.
+- **Survivorship.** The pages list models that have been deprecated or have a shutdown date. A model still on sale with no notice has a lifetime of at least its age so far; leaving it out biases the median short. The censoring method on [Model Half-Life](/framework/model-half-life/) is the remedy once release dates are collected for active models too.
+- **Vendor policy differences.** Anthropic promises at least 60 days' notice before retiring a publicly released model.[^anthropic] Google states that its listed shutdown dates are the earliest possible ones.[^google] OpenAI and Anthropic both list scheduled dates that have not passed yet. The `retired` column copies the published date whatever its kind, so it mixes past and planned retirements.
+- **Mixed release events.** A release date is the first public API availability the vendor's notes or post state. For a preview or a gated model (Claude Mythos Preview) that is the preview date; for an alias whose snapshot was later swapped (`gpt-realtime-mini`) it is the first release of the alias.
+- **What a row counts.** One row is one model ID as the deprecation page lists it. Aliases on the same row (`gpt-5` and `gpt-5-2025-08-07`) are one row; separate IDs for preview, stable and size variants are separate rows. A vendor that splits a family into more IDs gets more weight.
+- **The page versions read.** Vendors edit these pages; the access dates on each row say which versions were read. Older retirements that a page no longer lists are not in the data.
+
+## Sources
+
+[^anthropic]: Model deprecations, Claude Platform Docs, https://platform.claude.com/docs/en/about-claude/model-deprecations, accessed 2026-11-25
+[^anthropic-notes]: Claude Platform release notes, Claude Platform Docs, https://platform.claude.com/docs/en/release-notes/overview, accessed 2026-11-26
+[^claude3]: Introducing the next generation of Claude, Anthropic, https://www.anthropic.com/news/claude-3-family, accessed 2026-11-26
+[^haiku3]: Claude 3 Haiku: our fastest model yet, Anthropic, https://www.anthropic.com/news/claude-3-haiku, accessed 2026-11-26
+[^claude2]: Claude 2, Anthropic, https://www.anthropic.com/news/claude-2, accessed 2026-11-26
+[^claude21]: Introducing Claude 2.1, Anthropic, https://www.anthropic.com/news/claude-2-1, accessed 2026-11-26
+[^openai]: Deprecations, OpenAI API documentation, https://developers.openai.com/api/docs/deprecations, accessed 2026-11-25
+[^openai-notes]: Changelog, OpenAI API documentation, https://developers.openai.com/api/docs/changelog, accessed 2026-11-26
+[^google]: Gemini deprecations, Gemini API documentation, https://aistudio.google.com/docs/deprecations, accessed 2026-11-25
+[^google-notes]: Release notes, Gemini API documentation, https://aistudio.google.com/docs/changelog, accessed 2026-11-26
+[^mdn]: Date, MDN Web Docs, https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date, accessed 2026-11-26
