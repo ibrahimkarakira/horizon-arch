@@ -1,0 +1,20 @@
+# lychee settings shared by both link checks (scripts/check-links.mjs). Keys: https://lychee.cli.rs/guides/config
+# Policy and how to fix a dead link: docs/link-policy.md.
+
+# Seconds from connect to response finished, per request.
+timeout = 20
+
+# Transient failures (timeouts, 429 Too Many Requests, 5xx) are retried with exponential backoff
+# starting at retry_wait_time seconds; a 404 fails at once.
+max_retries = 3
+retry_wait_time = 2
+
+# Only a 200 counts as a live link. A redirect is followed first, so a moved page still passes.
+accept = [200]
+
+# The cache (.lycheecache, written only by the external check) skips URLs checked in the last day,
+# so a re-run after a fix does not hit every source again.
+max_cache_age = "1d"
+
+# No exclusions by default: a source that cannot be checked is a finding, not noise.
+exclude = []

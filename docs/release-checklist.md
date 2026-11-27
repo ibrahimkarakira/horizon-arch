@@ -12,7 +12,7 @@ Versions follow Semantic Versioning (0.y.z while the project is in initial devel
 - [ ] `tests/release.test.mjs` passes (it fails when those four files disagree).
 - [ ] Release notes drafted in `docs/releases/vx.y.z.md`: what is in it, how to try it, what is not in it.
 - [ ] Clean clone on Windows: `npm ci` and `npm run check` both exit 0.
-- [ ] Clean clone in Docker `node:22`: `npm ci && npm run check` exits 0.
+- [ ] Clean clone in Docker `node:22`: `npm ci && npm run check` exits 0 (install the lychee release binary first, see `docs/link-policy.md`).
 - [ ] `npm run preview` serves the site; screenshots of the release's headline pages are in the PR.
 - [ ] Every claim in the release notes is backed by a command output or a source; anything else is marked `[UNCLEAR]` or removed.
 

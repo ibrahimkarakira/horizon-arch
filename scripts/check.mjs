@@ -9,6 +9,7 @@ const STEPS = [
   ['test', 'npm test'], // reads dist/, so it runs after build
   ['validate', 'npm run validate'], // every file in predictions/
   ['sources', 'npm run check:sources'], // alt text in dist/, citations in src/content/docs/
+  ['links', 'npm run check:links'], // internal links in dist/, offline (source URLs are a separate manual command, see docs/link-policy.md)
 ];
 
 for (const [name, command] of STEPS) {

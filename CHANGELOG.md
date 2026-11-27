@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows Keep
 
 ## Unreleased
 
+- Link checks with lychee: `npm run check` fails on a broken internal link in the built site, `npm run check:links:external` reports dead source URLs (Markdown and `.yml` predictions) with retries and a cache, run by hand about weekly (`docs/link-policy.md`), and the site gets the favicon its pages already linked to (#24).
+
 ## [0.1.0] - 2026-11-27
 
 First tagged release: the site builds and previews locally, the prediction format is checked, and the Model Half-Life framework page has its first dataset. No prediction is published yet. Roadmap tasks D01 to D10.
