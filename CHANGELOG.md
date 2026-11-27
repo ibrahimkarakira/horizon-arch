@@ -5,6 +5,7 @@ All notable changes to this project are documented here. The format follows Keep
 ## Unreleased
 
 - Link checks with lychee: `npm run check` fails on a broken internal link in the built site, `npm run check:links:external` reports dead source URLs (Markdown and `.yml` predictions) with retries and a cache, run by hand about weekly (`docs/link-policy.md`), and the site gets the favicon its pages already linked to (#24).
+- Reference architecture: eval-gated model swap (`/architectures/eval-gated-swap/`), a five-step diagram with the output artefact of each step, a tool-neutral eval box and a "What this does not prove" section (#25).
 
 ## [0.1.0] - 2026-11-27
 
