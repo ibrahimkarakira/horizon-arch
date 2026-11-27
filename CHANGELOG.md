@@ -4,6 +4,11 @@ All notable changes to this project are documented here. The format follows Keep
 
 ## Unreleased
 
+- Link checks with lychee: `npm run check` fails on a broken internal link in the built site, `npm run check:links:external` reports dead source URLs (Markdown and `.yml` predictions) with retries and a cache, run by hand about weekly (`docs/link-policy.md`), and the site gets the favicon its pages already linked to (#24).
+- Reference architecture: eval-gated model swap (`/architectures/eval-gated-swap/`), a five-step diagram with the output artefact of each step, a tool-neutral eval box and a "What this does not prove" section (#25).
+- Essay 2 data, as a draft awaiting its prose: `src/content/docs/essays/002-observed-model-lifetimes.mdx` with the median, quartiles and per-vendor spread of days to deprecation notice, each extreme cited by CSV line, a preview/stable split and six limits; the chart `diagrams/model-lifetimes.svg` comes from `node scripts/model-halflife.mjs --svg`, and a test fails when the chart or a number drifts from the CSV. The three vendor deprecation pages were re-read on 2026-11-28; all 112 rows still match, and their access dates are updated (#27).
+- 2100 scenarios: a method page (`/scenarios/2100/`) and the first three structural predictions, `predictions/P2100-001.yml` to `P2100-003.yml`. The schema adds `kind: structural` (required for 2100) with a required `proxy` note and an optional `conditional_on` list; the validator rejects unknown ids and cycles in `conditional_on` (#32).
+
 ## [0.1.0] - 2026-11-27
 
 First tagged release: the site builds and previews locally, the prediction format is checked, and the Model Half-Life framework page has its first dataset. No prediction is published yet. Roadmap tasks D01 to D10.

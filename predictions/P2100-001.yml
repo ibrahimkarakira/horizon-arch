@@ -1,0 +1,47 @@
+id: P2100-001
+title: Model versions stay shorter-lived than the systems built on them
+claim: >
+  For hosted AI model versions given a deprecation notice between 2091-01-01 and 2100-12-31, the median time
+  from release to that notice is under 10 years.
+horizon: 2100
+kind: structural
+proxy: >
+  The median release-to-notice time from data/model-lifetimes.csv, re-measured at each checkpoint and in 2050.
+  A median above 3 years at the 2031 checkpoint, or above 6 years in 2050, lowers the probability by at least
+  20 points.
+resolution_date: 2100-12-31
+created: 2026-11-28
+probability: 80
+probability_basis: >
+  Low confidence; no reference class spans 74 years. The measured median in this repository is 302.5 days
+  (n = 76 model versions, three vendors, 2023 to 2026, data/model-lifetimes.csv), so the 10-year threshold sits
+  about twelve times above today's value. The main way this fails is model versions turning into long-lived
+  infrastructure that vendors keep for decades.
+assumptions:
+  - id: A1
+    statement: Vendors keep offering hosted models under version ids and keep publishing when a version ends.
+    watch: The vendor deprecation pages cited below.
+  - id: A2
+    statement: Each vendor releases new model versions more often than once a decade.
+    watch: Vendor release notes and the release dates in data/model-lifetimes.csv.
+checkpoint_date: 2031-11-28
+checkpoint_signal: >
+  `node scripts/model-halflife.mjs` on data/model-lifetimes.csv, updated from the vendor pages in 2031, reports a
+  median under 1,096 days (3 years).
+resolution_criteria: >
+  Apply the method on the Model lifetimes page of this site to versions whose notice is dated 2091-01-01 to
+  2100-12-31, using every vendor that publishes a deprecation page. True if the median is under 3,652 days.
+  Ambiguous if no vendor publishes such a page.
+resolution_source: Vendor deprecation pages, measured with scripts/model-halflife.mjs
+status: open
+sources:
+  - title: Deprecations, OpenAI API documentation
+    url: https://developers.openai.com/api/docs/deprecations
+    accessed: 2026-11-28
+  - title: Model deprecations, Claude Platform Docs
+    url: https://platform.claude.com/docs/en/about-claude/model-deprecations
+    accessed: 2026-11-28
+  - title: Gemini deprecations, Gemini API documentation
+    url: https://aistudio.google.com/docs/deprecations
+    accessed: 2026-11-28
+tags: [model-lifetimes, structural]

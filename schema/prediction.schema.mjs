@@ -16,11 +16,18 @@ const source = z.strictObject({ title: text, url: z.url(), accessed: date });
 const probability = z.int().min(1).max(99);
 const revision = z.strictObject({ date, probability, reason: text });
 
+const predictionId = z.string().regex(/^P(2030|2050|2100)-\d{3}$/, 'id must look like P2030-001');
+
 const predictionObject = z.strictObject({
-  id: z.string().regex(/^P(2030|2050|2100)-\d{3}$/, 'id must look like P2030-001'),
+  id: predictionId,
   title: text,
   claim: text,
   horizon: z.literal([2030, 2050, 2100]),
+  // structural: a claim no one alive now will see resolve (all 2100 claims); judged through `proxy`.
+  kind: z.enum(['forecast', 'structural']).optional(),
+  proxy: text.optional(),
+  // Ids that must resolve true for this claim to be scored. The validator checks they exist and form no cycle.
+  conditional_on: z.array(predictionId).min(1).optional(),
   resolution_date: date,
   created: date,
   probability,
@@ -50,6 +57,10 @@ export const predictionSchema = predictionObject.superRefine((p, ctx) => {
   if (p.checkpoint_date > addYears(p.created, window)) {
     issue('checkpoint_date', `checkpoint_date must be within ${window} years of created for horizon ${p.horizon}`);
   }
+  const structural = p.kind === 'structural';
+  if (p.horizon === 2100 && !structural) issue('kind', 'horizon 2100 predictions must be kind: structural');
+  if (structural && !p.proxy) issue('proxy', 'kind structural requires proxy');
+  if (p.conditional_on && !structural) issue('conditional_on', 'conditional_on is allowed only for kind: structural');
   if (RESOLVED_STATUSES.includes(p.status)) {
     if (!p.resolved_on) issue('resolved_on', `status ${p.status} requires resolved_on`);
     if (!p.resolution_note) issue('resolution_note', `status ${p.status} requires resolution_note`);
@@ -61,5 +72,5 @@ export const predictionJsonSchema = () => ({
   $id: 'https://github.com/ibrahimkarakira/horizon-arch/blob/main/schema/prediction.schema.json',
   title: 'horizon-arch prediction',
   description:
-    'Field shapes only. Cross-field rules (id matches horizon, checkpoint window, resolution fields) are enforced by predictionSchema in schema/prediction.schema.mjs.',
+    'Field shapes only. Cross-field rules (id matches horizon, checkpoint window, resolution fields, structural kind and proxy) and cross-file rules (conditional_on ids exist, no cycles) are enforced by predictionSchema in schema/prediction.schema.mjs and scripts/validate-predictions.mjs.',
 });

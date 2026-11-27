@@ -21,7 +21,9 @@
     "schema:json": "node scripts/build-schema-json.mjs",
     "scoreboard": "node scripts/scoreboard.mjs",
     "postbuild": "npm run check:sources",
-    "check:sources": "node scripts/check-sources.mjs"
+    "check:sources": "node scripts/check-sources.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:links:external": "node scripts/check-links.mjs --external"
   },
   "dependencies": {
     "@astrojs/check": "0.9.12",

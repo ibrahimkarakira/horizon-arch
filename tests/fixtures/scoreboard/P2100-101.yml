@@ -3,6 +3,8 @@ id: P2100-101
 title: Scoreboard fixture P2100-101
 claim: Synthetic metric P2100-101 reaches 10 on the fixture dashboard by 2100-12-31.
 horizon: 2100
+kind: structural
+proxy: Fixture proxy, a synthetic reader count checked at each checkpoint.
 resolution_date: 2100-12-31
 created: 2026-01-05
 probability: 50

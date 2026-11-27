@@ -5,6 +5,9 @@ title: <TITLE>
 claim: >
   <CLAIM>
 horizon: <HORIZON>               # 2030 | 2050 | 2100
+# kind: structural               # required for 2100: a claim judged through its proxy, see /scenarios/2100/
+# proxy: ...                     # required when kind is structural: what is measured at each checkpoint and in 2030/2050
+# conditional_on: [P2100-001]    # structural only: ids that must resolve true for this one to be scored
 resolution_date: <RESOLUTION_DATE>   # YYYY-MM-DD, when the claim is judged
 created: <CREATED>               # YYYY-MM-DD
 probability: <PROBABILITY>       # integer 1..99, percent that the claim resolves true

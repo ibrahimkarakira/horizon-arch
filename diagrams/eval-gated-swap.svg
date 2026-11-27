@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 300" role="img" aria-labelledby="eval-gated-swap-title eval-gated-swap-desc">
+  <title id="eval-gated-swap-title">Eval-gated model swap: five steps, each leaving an artefact a reviewer can open</title>
+  <desc id="eval-gated-swap-desc">Five boxes in a row, joined by arrows from left to right: frozen eval set, candidate run, side-by-side diff, decision record, rollback. Under each box is the artefact the step produces: a versioned eval set with its hash; the candidate's raw outputs and scores, next to the incumbent's on the same set; a per-case diff of the two; a signed-off decision record that names the eval set hash; a tested rollback path to the incumbent model. A dashed arrow runs from rollback back to the decision record, because a rollback is itself recorded. The eval tool box is unlabelled by vendor: any eval tool can fill it.</desc>
+  <defs>
+    <marker id="egs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path class="ha-head-mark" d="M0,0 L10,5 L0,10 z"/>
+    </marker>
+  </defs>
+  <style>
+    /* Colours come from the page palette (src/styles/diagrams.css); the fallbacks are the light theme. */
+    .ha-bg { fill: var(--ha-surface, #ffffff); }
+    .ha-row { fill: var(--ha-fill, #eef0f3); stroke: var(--ha-line, #5c6270); stroke-width: 1; }
+    .ha-tool { fill: none; stroke: var(--ha-line, #5c6270); stroke-width: 1; stroke-dasharray: 4 4; }
+    .ha-flow { fill: none; stroke: var(--ha-line, #5c6270); stroke-width: 1.5; }
+    .ha-back { fill: none; stroke: var(--ha-line, #5c6270); stroke-width: 1.5; stroke-dasharray: 5 4; }
+    .ha-head-mark { fill: var(--ha-line, #5c6270); }
+    .ha-name { fill: var(--ha-ink, #1b1d22); font: 600 15px system-ui, sans-serif; }
+    .ha-text { fill: var(--ha-ink, #1b1d22); font: 13px system-ui, sans-serif; }
+    .ha-note { fill: var(--ha-line, #5c6270); font: italic 13px system-ui, sans-serif; }
+  </style>
+  <rect class="ha-bg" width="980" height="300"/>
+
+  <rect class="ha-tool" x="200" y="20" width="370" height="150" rx="8"/>
+  <text class="ha-note" x="212" y="40">any eval tool fills this box</text>
+
+  <rect class="ha-row" x="16" y="60" width="164" height="56" rx="6"/>
+  <text class="ha-name" x="98" y="93" text-anchor="middle">Frozen eval set</text>
+  <rect class="ha-row" x="212" y="60" width="164" height="56" rx="6"/>
+  <text class="ha-name" x="294" y="93" text-anchor="middle">Candidate run</text>
+  <rect class="ha-row" x="400" y="60" width="160" height="56" rx="6"/>
+  <text class="ha-name" x="480" y="93" text-anchor="middle">Side-by-side diff</text>
+  <rect class="ha-row" x="600" y="60" width="164" height="56" rx="6"/>
+  <text class="ha-name" x="682" y="93" text-anchor="middle">Decision record</text>
+  <rect class="ha-row" x="800" y="60" width="164" height="56" rx="6"/>
+  <text class="ha-name" x="882" y="93" text-anchor="middle">Rollback</text>
+
+  <path class="ha-flow" d="M180,88 L208,88" marker-end="url(#egs-arrow)"/>
+  <path class="ha-flow" d="M376,88 L396,88" marker-end="url(#egs-arrow)"/>
+  <path class="ha-flow" d="M560,88 L596,88" marker-end="url(#egs-arrow)"/>
+  <path class="ha-flow" d="M764,88 L796,88" marker-end="url(#egs-arrow)"/>
+  <path class="ha-back" d="M882,116 L882,150 Q882,160 872,160 L692,160 Q682,160 682,150 L682,120" marker-end="url(#egs-arrow)"/>
+
+  <text class="ha-text" x="98" y="200" text-anchor="middle">Versioned set,</text>
+  <text class="ha-text" x="98" y="218" text-anchor="middle">content hash</text>
+  <text class="ha-text" x="294" y="200" text-anchor="middle">Raw outputs and scores,</text>
+  <text class="ha-text" x="294" y="218" text-anchor="middle">incumbent and candidate</text>
+  <text class="ha-text" x="480" y="200" text-anchor="middle">Per-case diff,</text>
+  <text class="ha-text" x="480" y="218" text-anchor="middle">with uncertainty</text>
+  <text class="ha-text" x="682" y="200" text-anchor="middle">Signed-off decision,</text>
+  <text class="ha-text" x="682" y="218" text-anchor="middle">cites the set hash</text>
+  <text class="ha-text" x="882" y="200" text-anchor="middle">Tested path back</text>
+  <text class="ha-text" x="882" y="218" text-anchor="middle">to the incumbent</text>
+
+  <text class="ha-note" x="16" y="270">Row below the boxes: the artefact each step leaves. Dashed arrow: a rollback is recorded as a decision too.</text>
+</svg>

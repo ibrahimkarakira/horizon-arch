@@ -1,0 +1,45 @@
+---
+title: Eval-gated model swap
+description: The pipeline for swapping a model safely, from a frozen eval set to a tested rollback, and the evidence each step leaves behind.
+---
+
+import EvalGatedSwap from '../../../../diagrams/eval-gated-swap.svg';
+
+A model swap is the most frequent change in the [model layer](/framework/layers/), and vendors set part of its schedule by retiring model IDs (see [Model Half-Life](/framework/model-half-life/)). This architecture makes the swap a routine with a gate: the candidate model replaces the incumbent only when a frozen eval set says it should, and a reviewer can check that decision later from the artefacts alone.
+
+<figure class="diagram">
+  <EvalGatedSwap />
+  <figcaption>The claim this supports: every step of a model swap leaves an artefact, so the decision to swap can be re-checked after the fact without re-running anything. The eval tool box is deliberately unnamed.</figcaption>
+</figure>
+
+## Steps and the evidence each one produces
+
+| Step | What happens | Output artefact |
+|---|---|---|
+| Frozen eval set | The cases, graders and expected outputs are versioned and frozen before the candidate is run, so the set cannot be tuned to the result | A versioned eval set with a content hash |
+| Candidate run | The incumbent and the candidate run the same frozen set with the same prompts, tools and settings | Raw outputs and scores for both models, tagged with the set hash and model IDs |
+| Side-by-side diff | Results are compared case by case, not only as one aggregate score, and the difference is reported with its uncertainty | A per-case diff listing improved, regressed and unchanged cases, with the score difference and its standard error |
+| Decision record | A named person accepts or rejects the swap against thresholds written down before the run | A dated decision record that cites the set hash, the diff and the thresholds |
+| Rollback | The path back to the incumbent model is kept deployable and exercised before the swap goes live | A tested rollback procedure and the record of its last test run |
+
+Freezing the set first matters because evaluation is a continuous process and the set grows over time;[^openai] the version that judged a swap has to stay recoverable after new cases are added. Eval cases should mirror the real task distribution and include edge cases,[^anthropic] otherwise the gate measures something other than the production workload. Reporting the difference between two models with a standard error, rather than two bare scores, follows the statistical treatment of evaluations as experiments.[^errorbars]
+
+## Any eval tool fills the box
+
+The dashed box in the diagram covers the candidate run and the diff. Any eval tool that can run one fixed test set against two models and keep the raw results fills it. Two public examples: promptfoo describes itself as repeatable tests to compare prompts and models,[^promptfoo] and Inspect's `eval_set()` evaluates every task against every model in a list, writing logs to a directory.[^inspect] Neither is required. A script that writes outputs and scores to files meets the same contract, as long as the artefacts in the table exist.
+
+## What this does not prove
+
+- **It does not prove the candidate is better in production.** It shows the candidate did at least as well on the frozen set. Production traffic that the set does not cover is untested.
+- **It does not prove the eval set is good.** A set with no hard cases passes every candidate. The gate is only as strong as the cases in it.
+- **It does not prove the difference is real when the set is small.** With few cases the standard error can be larger than the difference;[^errorbars] the decision record should say so rather than round it away.
+- **It does not cover the other layers.** A swap often forces changes to prompts, tool schemas or expected outputs. Those changes need their own versions and records.
+- **It does not make rollback free.** A rollback path that was never exercised is a plan, not evidence.
+
+## Sources checked
+
+[^openai]: Evaluation best practices, OpenAI API documentation, https://developers.openai.com/api/docs/guides/evaluation-best-practices, accessed 2026-11-28
+[^anthropic]: Define success criteria and build evaluations, Claude Platform Docs, https://platform.claude.com/docs/en/test-and-evaluate/develop-tests, accessed 2026-11-28
+[^errorbars]: Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations, arXiv:2411.00640, https://arxiv.org/abs/2411.00640, accessed 2026-11-28
+[^promptfoo]: Intro, Promptfoo documentation, https://www.promptfoo.dev/docs/intro/, accessed 2026-11-28
+[^inspect]: Tutorial, Inspect documentation (UK AI Security Institute), https://inspect.aisi.org.uk/tutorial.html, accessed 2026-11-28

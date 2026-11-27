@@ -4,6 +4,8 @@ title: Synthetic fixture for the 2100 horizon
 claim: >
   By 2100-12-31, a synthetic archive Z is still readable with its original format spec.
 horizon: 2100
+kind: structural
+proxy: Fixture proxy, a synthetic reader count checked at each checkpoint.
 resolution_date: 2100-12-31
 created: 2026-11-20
 probability: 12

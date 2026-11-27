@@ -1,0 +1,42 @@
+id: P2100-002
+title: Swapping the model is a configuration change
+claim: >
+  On 2100-12-31, at least 3 of the 5 most-downloaded open-source libraries for calling hosted AI models
+  document a supported way to change the model provider through configuration alone, with no code change.
+horizon: 2100
+kind: structural
+conditional_on: [P2100-001]
+proxy: >
+  A count, recorded in this repository at each checkpoint and in 2050, of how many of the 5 most-downloaded such
+  libraries document configuration-only provider switching. Fewer than 3 of 5 in 2050 lowers the probability
+  by at least 20 points.
+resolution_date: 2100-12-31
+created: 2026-11-28
+probability: 65
+probability_basis: >
+  Low confidence, conditional on P2100-001. If model versions keep ending every few years, every system pays
+  the swap cost repeatedly, and libraries that make the swap cheap gain users. Against it: one provider or one
+  interface standard could win so fully that switching stops mattering. The 2026 count has not been measured;
+  the first checkpoint measures it.
+assumptions:
+  - id: A1
+    statement: Open-source libraries remain the usual way applications call hosted models.
+    watch: Download counts on the largest public package registries.
+  - id: A2
+    statement: Provider interfaces stay different enough that a switching layer is worth maintaining.
+    watch: Vendor API documentation and their deprecation pages.
+checkpoint_date: 2031-11-28
+checkpoint_signal: >
+  At least 3 of the 5 most-downloaded libraries for calling hosted AI models, counted on PyPI and npm, document
+  configuration-only provider switching.
+resolution_criteria: >
+  Take the 5 most-downloaded libraries in this category on the largest public package registry of the most-used
+  language for it, and read each library's documentation. True if at least 3 document configuration-only
+  provider switching. Ambiguous if P2100-001 resolves false.
+resolution_source: Public package registry download statistics and each library's documentation
+status: open
+sources:
+  - title: Model deprecations, Claude Platform Docs
+    url: https://platform.claude.com/docs/en/about-claude/model-deprecations
+    accessed: 2026-11-28
+tags: [model-swap, structural]

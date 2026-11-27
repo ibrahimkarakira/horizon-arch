@@ -1,0 +1,43 @@
+id: P2100-003
+title: One open-source project outlives five models
+claim: >
+  On 2100-12-31, at least one open-source project that has been maintained without a gap since before
+  2050-01-01 and calls hosted AI models has replaced its default model version at least 5 times, as shown
+  in its public changelog or version history.
+horizon: 2100
+kind: structural
+conditional_on: [P2100-001, P2100-002]
+proxy: >
+  The longest public record, found at each checkpoint, of default-model changes in one open-source project, and
+  whether that project's history is still online. No project with 3 or more recorded changes by 2050 lowers the
+  probability by at least 20 points.
+resolution_date: 2100-12-31
+created: 2026-11-28
+probability: 70
+probability_basis: >
+  Low confidence, conditional on P2100-001 and P2100-002. A project maintained for 50 years would face about
+  60 forced swaps at today's measured median of 302.5 days (data/model-lifetimes.csv), and 5 at P2100-001's
+  10-year ceiling, so the threshold of 5 is reachable even at that ceiling. The main risks are that few open-source
+  projects may stay maintained for 50 years ([UNCLEAR]: no public survival measure for open-source projects is
+  cited here) and that version histories get lost when hosting services close.
+assumptions:
+  - id: A1
+    statement: Public version-control histories from the 2040s are still readable in 2100.
+    watch: Whether the hosting services of tracked projects still serve their histories.
+  - id: A2
+    statement: Projects record default-model changes in changelogs or configuration files under version control.
+    watch: Changelogs of open-source projects that call hosted models.
+checkpoint_date: 2031-11-28
+checkpoint_signal: >
+  At least one open-source project's public history shows its default hosted model version changed 2 or more
+  times between 2023-01-01 and 2031-11-28.
+resolution_criteria: >
+  True if at least one qualifying project is found whose public history shows 5 or more changes of its default
+  model version. Ambiguous if P2100-001 or P2100-002 resolves false.
+resolution_source: Public version-control histories and changelogs of open-source projects
+status: open
+sources:
+  - title: The half-life of code and the ship of Theseus
+    url: https://erikbern.com/2016/12/05/the-half-life-of-code.html
+    accessed: 2026-11-28
+tags: [system-lifetimes, structural]
