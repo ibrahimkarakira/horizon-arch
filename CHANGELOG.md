@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format follows Keep
 
 ## Unreleased
 
-## [0.1.0] - 2026-11-26
+## [0.1.0] - 2026-11-27
 
 First tagged release: the site builds and previews locally, the prediction format is checked, and the Model Half-Life framework page has its first dataset. No prediction is published yet. Roadmap tasks D01 to D10.
 
