@@ -1,8 +1,9 @@
 // Validates prediction files: `node scripts/validate-predictions.mjs [file-or-dir ...]` (default: predictions/).
 // Prints `<file>:<line>: error|warning: <field>: <reason>` per finding and a summary line.
-// Exit 1 on any error; warnings (vague words in the claim) keep exit 0.
+// Exit 1 on any error; warnings (vague words in the claim) keep exit 0. Findings cover only the files named;
+// conditional_on ids may also name prediction files in the same directory.
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { basename, extname, join, relative } from 'node:path';
+import { basename, dirname, extname, join, relative } from 'node:path';
 import { LineCounter, isMap, isSeq, parseDocument } from 'yaml';
 import { predictionSchema } from '../schema/prediction.schema.mjs';
 
@@ -41,7 +42,7 @@ function lineOf(doc, lines, path) {
   return line;
 }
 
-async function checkFile(file, seenIds, findings) {
+async function checkFile(file, seenIds, findings, graph) {
   const lines = new LineCounter();
   const doc = parseDocument(await readFile(file, 'utf8'), { lineCounter: lines });
   const add = (level, path, reason) =>
@@ -65,17 +66,54 @@ async function checkFile(file, seenIds, findings) {
     const name = basename(file, extname(file));
     if (id !== name) add('error', ['id'], `id ${id} must match the filename ${name}`);
     if (seenIds.has(id)) add('error', ['id'], `duplicate id ${id}, also in ${relative(process.cwd(), seenIds.get(id))}`);
-    else seenIds.set(id, file);
+    else {
+      seenIds.set(id, file);
+      const deps = Array.isArray(data.conditional_on) ? data.conditional_on.filter((d) => typeof d === 'string') : [];
+      graph.set(id, { deps, add });
+    }
   }
   const vague = typeof data?.claim === 'string' && data.claim.match(VAGUE_WORDS);
   if (vague) add('warning', ['claim'], `vague word "${vague[1]}"; state a measurable threshold instead`);
+}
+
+// Ids of the prediction files beside each checked file (filename = id, enforced above), so checking one
+// file still finds the dependencies that sit next to it.
+async function siblingIds(files) {
+  const ids = new Set();
+  for (const dir of new Set(files.map(dirname))) {
+    for (const f of (await readdir(dir)).filter(isYaml)) ids.add(basename(f, extname(f)));
+  }
+  return ids;
+}
+
+// Cross-file rules for conditional_on: every id exists among the files checked or beside them, and the
+// chains among the files checked form no cycle.
+// ponytail: cycles that run through an unchecked sibling are not seen; `npm run validate` checks the whole dir.
+function checkConditions(graph, knownIds) {
+  for (const { deps, add } of graph.values()) {
+    deps.forEach((dep, i) => graph.has(dep) || knownIds.has(dep) || add('error', ['conditional_on', i], `unknown prediction id ${dep}`));
+  }
+  const done = new Set();
+  const visit = (id, stack) => {
+    if (stack.includes(id)) {
+      const cycle = [...stack.slice(stack.indexOf(id)), id];
+      graph.get(cycle[0]).add('error', ['conditional_on'], `cycle ${cycle.join(' -> ')}`);
+      return;
+    }
+    if (done.has(id) || !graph.has(id)) return;
+    for (const dep of graph.get(id).deps) visit(dep, [...stack, id]);
+    done.add(id);
+  };
+  for (const id of [...graph.keys()].sort()) visit(id, []);
 }
 
 async function validate(args) {
   const findings = [];
   const files = await collect(args.length ? args : ['predictions'], findings);
   const seenIds = new Map();
-  for (const file of files) await checkFile(file, seenIds, findings);
+  const graph = new Map(); // id -> { deps: conditional_on ids, add: finding reporter for that file }
+  for (const file of files) await checkFile(file, seenIds, findings, graph);
+  checkConditions(graph, await siblingIds(files));
   return { count: files.length, findings };
 }
 

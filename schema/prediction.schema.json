@@ -22,6 +22,25 @@
         2100
       ]
     },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "forecast",
+        "structural"
+      ]
+    },
+    "proxy": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conditional_on": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^P(2030|2050|2100)-\\d{3}$"
+      }
+    },
     "resolution_date": {
       "type": "string",
       "format": "date",
@@ -190,5 +209,5 @@
   "additionalProperties": false,
   "$id": "https://github.com/ibrahimkarakira/horizon-arch/blob/main/schema/prediction.schema.json",
   "title": "horizon-arch prediction",
-  "description": "Field shapes only. Cross-field rules (id matches horizon, checkpoint window, resolution fields) are enforced by predictionSchema in schema/prediction.schema.mjs."
+  "description": "Field shapes only. Cross-field rules (id matches horizon, checkpoint window, resolution fields, structural kind and proxy) and cross-file rules (conditional_on ids exist, no cycles) are enforced by predictionSchema in schema/prediction.schema.mjs and scripts/validate-predictions.mjs."
 }

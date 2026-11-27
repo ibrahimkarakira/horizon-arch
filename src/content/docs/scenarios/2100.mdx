@@ -1,0 +1,41 @@
+---
+title: 2100 scenarios
+description: What a 2100 claim is for, why its probability is low-confidence, and how 2030 and 2050 proxies update it.
+---
+
+## Read this first
+
+No one who writes or reads this page today will see these predictions resolve. Their resolution date is 2100-12-31. So the repository does not wait for 2100: each claim is tied to a proxy that can be measured now, a checkpoint at most five years out, and the 2030 and 2050 evidence that moves its probability. A 2100 prediction here is judged by how well its proxies hold up along the way, not by its final outcome.
+
+## What a 2100 claim is for
+
+A 2030 claim is a forecast: it will be checked, scored and counted in the [scoreboard](/scoreboard/). A 2100 claim is a structural statement about forces that outlast any one model, vendor or team, such as how long model versions last compared with the systems built on them. Its job is to make an architecture assumption explicit and dated, so that the evidence against it has a place to land.
+
+Every 2100 prediction file therefore has `kind: structural` and a `proxy` note, and the validator rejects a 2100 prediction without them. It still carries a probability, because a claim without one cannot be revised.
+
+## Why the probabilities are low-confidence
+
+A review of past long-range forecasting exercises found that long-range forecasts are often stated too imprecisely to be judged, and that their confidence is rarely quantified.[^longrange] There is no track record of 74-year forecasts about software to calibrate against. The probabilities below are structural judgements, each with its basis written down, and they are expected to move by tens of points as the proxies come in.
+
+Scenario planning offers the other half of the method. Instead of a single forecast, it lays out how the future could unfold if certain forces hold, so that decisions can be tested against more than one outcome.[^scenarios] Here that becomes `conditional_on`: a claim can name the predictions that must resolve true for it to be scored. If any of them resolves false, the dependent claim resolves `ambiguous` and is not scored. The validator accepts `conditional_on` only for structural predictions, only with ids that exist, and rejects any chain that loops back on itself.
+
+## How the proxies update a 2100 claim
+
+1. **Checkpoint.** Each claim names a checkpoint within five years of its creation and the signal expected there.
+2. **Revision.** When a checkpoint is met or missed, the probability is revised and the change is appended to `revisions` with its date and reason. Revisions are never edited after the fact.
+3. **2030 and 2050.** Each proxy note says what a 2030 or 2050 reading would lower the probability by. Those readings come from the same public sources and scripts as the rest of the site.
+
+## The three structural predictions
+
+| Id | Claim, short | Conditional on | Probability |
+|---|---|---|---|
+| P2100-001 | Model versions given a deprecation notice in the 2090s were released less than 10 years earlier (median) | none | 80 |
+| P2100-002 | At least 3 of the 5 most-downloaded libraries for calling hosted models switch provider by configuration alone | P2100-001 | 65 |
+| P2100-003 | At least one open-source project maintained since before 2050 has replaced its default model at least 5 times | P2100-001, P2100-002 | 70 |
+
+P2100-001 starts from a measured value: the median release-to-notice time over 76 model versions is 302.5 days (see [Model lifetimes from public vendor pages](/framework/model-lifetimes/)). The full claims, assumptions, checkpoints and resolution criteria are in `predictions/P2100-001.yml` to `predictions/P2100-003.yml`.
+
+## Sources checked
+
+[^longrange]: How Feasible Is Long-range Forecasting?, Open Philanthropy (archived copy), https://web.archive.org/web/20250105203555/https://www.openphilanthropy.org/research/how-feasible-is-long-range-forecasting/, accessed 2026-11-28
+[^scenarios]: Scenarios: Uncharted Waters Ahead, Harvard Business Review, https://hbr.org/1985/09/scenarios-uncharted-waters-ahead, accessed 2026-11-28
