@@ -1,0 +1,80 @@
+---
+title: Observed model lifetimes
+description: How long vendors offered 76 model versions before announcing their end, how widely that varies, and what the data cannot say.
+draft: true
+---
+
+import ModelLifetimes from '../../../../diagrams/model-lifetimes.svg';
+
+{/* Essay 2 (issue #27). The numbers, chart and limits below are generated from data/model-lifetimes.csv and
+    checked by tests/essay-lifetimes.test.mjs. The prose is Ibrahim's: write it in the PROSE slots, then
+    delete `draft: true` to publish. "line N" means line N of data/model-lifetimes.csv (line 1 is the header). */}
+
+{/* PROSE (Ibrahim): opening. The claim, in one paragraph. */}
+
+## The numbers
+
+Measured from a model version's release to the vendor's deprecation notice for it, over n = 76 model versions from three vendors: median 302.5 days, quartiles 196 and 414.5 days. Half of the versions got their notice within about ten months of release; a quarter got it within 196 days.
+
+- Shortest: 58 days (`gemini-omni-flash-preview`, line 109)
+- Longest: 818 days (`gpt-4o-mini-2024-07-18`, line 37)
+
+The rows come from each vendor's deprecation page,[^anthropic][^openai][^google] with missing release or notice dates taken from the vendor's own release notes. Rows missing either date are left out, not estimated: 36 of the 112 rows. The method is on [Model lifetimes from public vendor pages](/framework/model-lifetimes/).
+
+<figure class="diagram">
+  <ModelLifetimes />
+  <figcaption>Each dot is one model version (n = 76); the solid tick is each vendor's median and the dashed line the median of all 76 (302.5 days). Generated from data/model-lifetimes.csv by <code>node scripts/model-halflife.mjs --svg</code>.</figcaption>
+</figure>
+
+{/* PROSE (Ibrahim): what the median means for someone pinning a model ID today. */}
+
+## Spread by vendor
+
+| Vendor | n | Min | Q1 | Median | Q3 | Max |
+|---|---|---|---|---|---|---|
+| Anthropic | 15 | 63 | 304 | 364 | 427 | 708 |
+| OpenAI | 22 | 168 | 248 | 315 | 524 | 818 |
+| Google | 39 | 58 | 152 | 211 | 356 | 603 |
+
+All values are days. The ends of each range:
+
+- Anthropic: shortest 63 days (`claude-mythos-preview`, line 4), longest 708 days (`claude-3-haiku-20240307`, line 8)
+- OpenAI: shortest 168 days (`gpt-image-1.5`, line 25), longest 818 days (`gpt-4o-mini-2024-07-18`, line 37)
+- Google: shortest 58 days (`gemini-omni-flash-preview`, line 109), longest 603 days (`text-embedding-004`, line 84)
+
+## Preview IDs
+
+Model IDs that contain the word `preview` are split out below, because a preview is offered on different terms from a stable release.
+
+| Model IDs | n | Median days |
+|---|---|---|
+| ID contains `preview` | 25 | 168 |
+| Other IDs | 51 | 358 |
+
+Of the 25 preview IDs, 24 are Google's and 1 is Anthropic's.
+
+{/* PROSE (Ibrahim): how much of the vendor difference the preview split explains. */}
+
+## What the data cannot say
+
+- **It is not the time to retirement.** The measure ends at the deprecation notice. Retirement comes later, by a margin each vendor sets; Anthropic, for example, promises at least 60 days' notice for publicly released models.[^anthropic]
+- **It is biased short.** Only models that already have a notice are counted. A model still on sale without one has lived at least its age so far, and leaving it out pulls the median down.
+- **It describes three vendors in 2023 to 2026.** 76 versions, 39 of them Google's, do not make a constant of the field, and the vendors' policies can change.
+- **Row counting follows the vendor's IDs.** A vendor that ships one family as many IDs (preview, stable, size variants) gets more weight than one that ships a single ID.
+- **The preview split is a string match.** An ID counts as a preview when it contains `preview`; a model that is a preview in all but name counts as stable.
+- **Vendors edit these pages.** The access date on every row says which version was read; a retirement a page no longer lists is not in the data.
+
+## Reproduce
+
+```sh
+node scripts/model-halflife.mjs                                     # n, median, excluded rows
+node scripts/model-halflife.mjs --svg > diagrams/model-lifetimes.svg   # the chart above
+```
+
+`npm test` fails if the chart or any number on this page no longer matches the CSV.
+
+## Sources checked
+
+[^anthropic]: Model deprecations, Claude Platform Docs, https://platform.claude.com/docs/en/about-claude/model-deprecations, accessed 2026-11-28
+[^openai]: Deprecations, OpenAI API documentation, https://developers.openai.com/api/docs/deprecations, accessed 2026-11-28
+[^google]: Gemini deprecations, Gemini API documentation, https://aistudio.google.com/docs/deprecations, accessed 2026-11-28
